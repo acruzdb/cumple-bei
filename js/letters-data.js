@@ -22,12 +22,23 @@ const LETTERS = [
     year: 2026,
     age: 22,
     unlocked: true,
-    title: "22",
+    title: "Feliz cumpleaños princesa",
     orientation: "horizontal", // "horizontal" o "vertical"
     body: [
-      "Este es un texto de prueba (placeholder). Aquí irá la carta real de este cumpleaños — puede ser todo lo larga que quieras, este espacio está pensado para textos extensos.",
-      "Sustituye este párrafo y el anterior por lo que quieras contarle a Bei. Puedes añadir tantos párrafos (líneas entre comillas, separadas por comas) como necesites.",
-      "Feliz cumpleaños, Bei.",
+	  "Feliz cumpleaños princesa. 22 años... parecía ayer cuando todavía te metías el pulgar en la boca (literalmente sigues haciéndolo).",
+	  "Hoy es un día especial, tanto para tí, como para los que te rodean. Gracias por hacerme un huequito en tu vida, en tu familia, en tu grupo de amigos.",
+	  "Eres realmente especial, y no hace falta mucho tiempo para darse cuenta de ello. Me recogiste como siempre dices 'Del cubo de la basura', nada más lejos de la realidad porque realmente no estaba bien. Gracias a esto:",
+	  "    - Me has ayudado a entender, que la vida es mucho más bonita cuando le sonríes en vez de ponerle malas caras.",
+	  "    - Me has ayudado a levantarme cuando peor he estado, cuando ni yo mismo creía en mí.",
+	  "    - Me has recordado que todos somos importantes para alguien, y que pese al tiempo que puedas estar solo, siempre acabará llegando esa persona que te dé el cariño que todos buscamos.",
+	  "    - Me has enseñado que nunca es tarde para cambiar, solo hay que querer y ponerle ganas.",
+	  "	   - Me has recordado lo bonito que es tener un familia que te quiere, con el propio ejemplo de la tuya.",
+	  "    - Y también me has recordado, que todavía quedan personas buenas y bonitas, como TU.",
+	  "Estoy super agradecido de que la vida te haya puesto en mi camino, porque de verdad, que has cambiado la mía. Me has devuelto la ilusión por las cosas, me siento apoyado en cualquier cosa que quiera poder hacer, me das una inmensidad de cariño que hace que me sienta como en casa... no sé, más que feliz de poder crecer contigo.",
+	  "Y bueno, como no todo van a ser cosas bonitas, vengo a recordarte que a partir del 1 de Septiembre seremos pobres, y aunque felices, tendremos que pensar en nuevos objetivos para nuestro plan de rateo máximo, que sino me veo comiendo botellas de plástico en vez de llevarlas al mercadona para que nos den un paquete de chicles y una bolsa de doritos.",
+	  "Una vez más, gracias por ser tan tú, por cuidarme tanto como puedes, y por quererme tan bien. Brillas de forma diferente, te lo garantizo.",
+      "Feliz vida, y Feliz cumpleaños preciosa,",
+	  "TE QUIERO.",
     ]
   },
   {

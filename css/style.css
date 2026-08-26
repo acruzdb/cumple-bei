@@ -340,7 +340,7 @@ button{ font-family: inherit; }
 .stage-caption{
   text-align:center;
   font-family: var(--font-script);
-  font-size: clamp(1.4rem, 9cqw, 2rem);
+  font-size: 1.6rem;
   color: var(--orange-dark);
   margin: 0 0 .6rem;
 }
@@ -354,15 +354,11 @@ button{ font-family: inherit; }
 
 /* =========================================================
    POSTAL
-   `container-type: inline-size` hace que todo el contenido
-   de dentro (texto, sello, matasellos) escale respecto al
-   ANCHO REAL de la postal, no del viewport — así no se
-   descuadra al hacerla más grande en ordenador.
+   Tamaños fijos por punto de ruptura (no unidades de
+   "container query"): son más predecibles entre navegadores
+   y evitan que el contenido se descuadre o se estire.
    ========================================================= */
-.postcard{
-  width: min(88vw, 380px);
-  container-type: inline-size;
-}
+.postcard{ width: min(88vw, 380px); }
 .postcard.is-vertical{ width: min(60vw, 300px); }
 
 .postcard-flip{
@@ -455,8 +451,8 @@ button{ font-family: inherit; }
   transform-style: flat;
   display:grid;
   grid-template-columns: 1.15fr 1px 1fr;
-  padding: clamp(.7rem, 4cqw, 1.4rem);
-  gap: clamp(.6rem, 3.5cqw, 1.2rem);
+  padding: .9rem;
+  gap: .8rem;
 }
 .postcard-back-grid::before{
   content:"";
@@ -467,11 +463,12 @@ button{ font-family: inherit; }
   display:flex;
   flex-direction:column;
   justify-content:center;
+  min-width:0;
 }
 .postcard-msg{
   margin:0;
   font-family: var(--font-script);
-  font-size: clamp(1.1rem, 8cqw, 1.7rem);
+  font-size: 1.3rem;
   color: var(--ink);
   line-height:1.2;
 }
@@ -479,27 +476,31 @@ button{ font-family: inherit; }
   margin: .5rem 0 0;
   font-family: var(--font-script);
   font-weight:700;
-  font-size: clamp(1.3rem, 9cqw, 2rem);
+  font-size: 1.55rem;
   color: var(--orange-dark);
 }
 .postcard-signature{
   position:absolute;
-  right: clamp(.7rem, 4cqw, 1.4rem);
-  bottom: clamp(.6rem, 3cqw, 1.2rem);
+  right: .9rem;
+  bottom: .7rem;
   margin:0;
   font-family: var(--font-script);
   font-weight:700;
-  font-size: clamp(1.2rem, 8cqw, 1.8rem);
+  font-size: 1.5rem;
   color: var(--orange-dark);
 }
 .postcard-addr-col{
   position:relative;
-  padding-top: .6rem;
+  padding-top: .5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  min-width:0;
 }
 .postcard-stamp-wrap{
   position:relative;
-  width: clamp(44px, 30cqw, 66px);
-  margin-left:auto;
+  width: 56px;
+  flex: none;
 }
 .postcard-stamp{
   width:100%;
@@ -517,15 +518,15 @@ button{ font-family: inherit; }
 }
 .postcard-stamp-mark{
   font-family: var(--font-display);
-  font-size: clamp(.5rem, 3cqw, .7rem);
+  font-size: .58rem;
   color: #3b1c05;
   font-weight:600;
 }
 .postcard-postmark{
   position:absolute;
-  top: -10%;
-  left: -32%;
-  width: 62%;
+  top: -8px;
+  left: -14px;
+  width: 60%;
   aspect-ratio:1;
   border-radius:50%;
   border: 2px solid rgba(74,47,24,.45);
@@ -534,18 +535,19 @@ button{ font-family: inherit; }
   display:flex;
   align-items:center;
   justify-content:center;
-  background: rgba(251,243,223,.6);
+  background: rgba(251,243,223,.7);
   z-index:2;
 }
 .postcard-postmark-icon{
-  font-size: clamp(.7rem, 5cqw, 1rem);
+  font-size: .8rem;
   color: var(--wax);
   opacity:.75;
 }
 .postcard-line{
   display:block;
+  width:100%;
   height:1px;
-  margin-top: 1.6rem;
+  margin-top: 1.1rem;
   background: rgba(74,47,24,.28);
 }
 .postcard-line.short{ width:60%; }
@@ -564,10 +566,7 @@ button{ font-family: inherit; }
    SOBRE — con las 4 solapas plegadas para que se lea
    claramente como un sobre cerrado (como en el reverso real)
    ========================================================= */
-.envelope{
-  width: min(90vw, 400px);
-  container-type: inline-size;
-}
+.envelope{ width: min(90vw, 400px); }
 
 .envelope-body{
   position:relative;
@@ -622,8 +621,8 @@ button{ font-family: inherit; }
 .seal{
   position:absolute;
   left:50%; top: 50%;
-  width: clamp(40px, 12cqw, 56px);
-  height: clamp(40px, 12cqw, 56px);
+  width: clamp(40px, 12vw, 56px);
+  height: clamp(40px, 12vw, 56px);
   border:none;
   cursor:pointer;
   clip-path: polygon(
@@ -650,7 +649,7 @@ button{ font-family: inherit; }
 .seal-letter{
   font-family: var(--font-display);
   font-weight:600;
-  font-size: clamp(1rem, 3.2cqw, 1.25rem);
+  font-size: clamp(1rem, 3.2vw, 1.25rem);
   color: rgba(255,225,195,.92);
   text-shadow: -1px -1px 1px rgba(0,0,0,.35), 1px 1px 1px rgba(255,220,190,.3);
 }
@@ -732,19 +731,36 @@ button{ font-family: inherit; }
 @media (min-width: 700px){
   .slots-grid{ grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
 
-  /* En pantallas grandes la postal y el sobre pueden crecer:
-     el `container-type` de arriba hace que todo su contenido
-     (texto, sello, matasellos) escale con ellos sin romperse. */
+  /* En pantallas grandes la postal y el sobre pueden crecer;
+     aquí se agranda también su contenido a juego (texto,
+     sello, sello postal) con valores fijos y predecibles. */
   .postcard{ width: min(46vw, 460px); }
   .postcard.is-vertical{ width: min(32vw, 340px); }
   .envelope{ width: min(46vw, 480px); }
   .letter-paper{ width: min(70vw, 700px); }
+
+  .postcard-back-grid{ padding: 1.3rem; gap: 1.1rem; }
+  .postcard-msg{ font-size: 1.6rem; }
+  .postcard-love{ font-size: 1.9rem; }
+  .postcard-signature{ font-size: 1.7rem; right: 1.3rem; bottom: 1.1rem; }
+  .postcard-stamp-wrap{ width: 68px; }
+  .postcard-stamp-mark{ font-size: .68rem; }
+  .postcard-postmark{ top: -10px; left: -18px; }
+  .postcard-postmark-icon{ font-size: .95rem; }
+  .postcard-line{ margin-top: 1.4rem; }
+  .stage-caption{ font-size: 1.85rem; }
 }
 @media (min-width: 1000px){
   .postcard{ width: min(34vw, 480px); }
   .postcard.is-vertical{ width: min(24vw, 360px); }
   .envelope{ width: min(34vw, 500px); }
   .letter-paper{ width: min(56vw, 720px); }
+
+  .postcard-back-grid{ padding: 1.5rem; gap: 1.2rem; }
+  .postcard-msg{ font-size: 1.75rem; }
+  .postcard-love{ font-size: 2.05rem; }
+  .postcard-signature{ font-size: 1.85rem; }
+  .postcard-stamp-wrap{ width: 76px; }
 }
 @media (max-height: 560px) and (orientation: landscape){
   .postcard, .envelope{ width: min(70vw, 360px); }
