@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>El correo de Bei</title>
+<meta name="description" content="Una carta y una postal por cada cumpleaños de Bei.">
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ VISTA 1: EL BUZÓN ============ -->
+<main id="mailbox-view" class="view is-active no-scrollbar">
+
+  <header class="mailbox-header">
+    <p class="eyebrow">Estación postal de</p>
+    <h1 class="signature-title">Bei</h1>
+    <p class="subtitle">Una carta por cada cumpleaños</p>
+  </header>
+
+  <div class="mailbox" aria-label="Buzón de casilleros por año">
+    <div class="slots-grid" id="slots-grid">
+      <!-- los casilleros se generan por JS -->
+    </div>
+  </div>
+
+  <p class="hint">Toca un casillero para ver la postal y la carta de ese cumpleaños</p>
+</main>
+
+<!-- Aviso flotante para casilleros aún cerrados -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ VISTA 2: POSTAL → SOBRE → CARTA ============ -->
+<section id="letter-view" class="view" aria-hidden="true">
+
+  <button id="close-btn" class="close-btn" aria-label="Volver al buzón">
+    <span aria-hidden="true">←</span> Volver al buzón
+  </button>
+
+  <div class="stage">
+    <div class="stage-inner" id="stage-inner">
+
+      <!-- Postal (foto delante / mensaje detrás) -->
+      <div id="postcard" class="postcard step">
+        <div class="postcard-flip" id="postcard-flip">
+          <div class="postcard-face postcard-front">
+            <img id="postcard-photo" class="postcard-photo" alt="" draggable="false">
+            <div class="postcard-fallback" id="postcard-fallback">
+              <span>Añade una foto de este año en<br><code id="fallback-path"></code></span>
+            </div>
+            <span class="postcard-corner postcard-corner--tl" aria-hidden="true"></span>
+            <span class="postcard-corner postcard-corner--br" aria-hidden="true"></span>
+          </div>
+          <div class="postcard-face postcard-back">
+            <div class="postcard-back-grid">
+              <div class="postcard-msg-col">
+                <p class="postcard-msg">Feliz cumpleaños,<br>preciosa</p>
+                <p class="postcard-love">Te quiero</p>
+                <p class="postcard-signature">A.</p>
+              </div>
+              <div class="postcard-addr-col">
+                <div class="postcard-stamp-wrap">
+                  <div class="postcard-stamp" aria-hidden="true">
+                    <span class="postcard-stamp-mark" id="postcard-stamp-year"></span>
+                  </div>
+                  <div class="postcard-postmark" aria-hidden="true">
+                    <span class="postcard-postmark-icon">♥</span>
+                  </div>
+                </div>
+                <span class="postcard-line"></span>
+                <span class="postcard-line"></span>
+                <span class="postcard-line short"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="stage-hint" id="postcard-hint">Toca la postal para darle la vuelta</p>
+      </div>
+
+      <!-- Sobre cerrado -->
+      <div id="envelope" class="envelope step">
+        <p class="stage-caption">Para Bei</p>
+        <div class="envelope-body">
+          <div class="envelope-back"></div>
+          <div class="envelope-fold envelope-fold--left"></div>
+          <div class="envelope-fold envelope-fold--right"></div>
+          <div class="envelope-fold envelope-fold--bottom"></div>
+          <div class="envelope-flap-shadow"></div>
+          <div class="envelope-flap"></div>
+          <button id="seal" class="seal" aria-label="Romper el sello y abrir la carta">
+            <span class="seal-letter">B</span>
+          </button>
+        </div>
+        <p class="stage-hint">Toca el sello para abrirla</p>
+      </div>
+
+      <!-- Carta -->
+      <article id="letter-paper" class="letter-paper step">
+        <div class="letter-scroll no-scrollbar" id="letter-scroll" tabindex="-1">
+          <p class="letter-postmark" id="letter-postmark"></p>
+          <h2 class="letter-title" id="letter-title"></h2>
+          <div class="letter-body" id="letter-body"></div>
+          <p class="letter-sign">Con todo mi cariño.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<script src="js/letters-data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

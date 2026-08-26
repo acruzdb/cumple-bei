@@ -1,0 +1,753 @@
+/* =========================================================
+   TOKENS — paleta clara, cálida, con el naranja como color
+   dominante (inspirada en un diario de otoño / recuerdos)
+   ========================================================= */
+:root{
+  --cream:      #faf1de;
+  --cream-deep: #f1e0b8;
+
+  --leather:       #c68a4e;
+  --leather-light: #e0b57f;
+  --leather-dark:  #96602f;
+
+  --orange:       #e2711d;
+  --orange-light: #f6a755;
+  --orange-pale:  #ffe3b8;
+  --orange-dark:  #a84e14;
+
+  --parchment:      #fbf3df;
+  --parchment-edge: #ecd6a8;
+  --parchment-spot: #d9b57a;
+
+  --ink:      #4a2f18;
+  --ink-soft: #8a6238;
+
+  --wax:       #b8391c;
+  --wax-dark:  #7d2410;
+  --wax-light: #d9663c;
+
+  --shadow: rgba(74,47,24,.35);
+
+  --font-display: 'Cinzel', serif;
+  --font-body:    'EB Garamond', serif;
+  --font-script:  'Dancing Script', cursive;
+
+  --ease: cubic-bezier(.22,.68,0,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+*{ box-sizing: border-box; }
+html{ -webkit-tap-highlight-color: transparent; }
+
+body{
+  margin:0;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(226,113,29,.10), transparent 55%),
+    var(--cream);
+}
+
+button{ font-family: inherit; }
+
+.no-scrollbar{ scrollbar-width:none; -ms-overflow-style:none; }
+.no-scrollbar::-webkit-scrollbar{ display:none; width:0; height:0; }
+
+/* =========================================================
+   VISTAS — capas a pantalla completa que se funden entre sí.
+   `visibility` se retrasa al ocultar (no corta el fundido)
+   pero es inmediata al mostrar, así la capa oculta deja de
+   poder recibir toques de verdad.
+   ========================================================= */
+.view{
+  position:fixed;
+  inset:0;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition: opacity .5s var(--ease-soft), visibility 0s linear .5s;
+  overflow-y:auto;
+  -webkit-overflow-scrolling: touch;
+}
+.view.is-active{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transition: opacity .5s var(--ease-soft), visibility 0s linear 0s;
+}
+#mailbox-view{ z-index:1; }
+#letter-view{ z-index:2; overflow:hidden; }
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.mailbox-header{
+  text-align:center;
+  padding: clamp(2.5rem, 8vh, 4.5rem) 1.25rem 1.5rem;
+}
+.eyebrow{
+  margin:0 0 .35rem;
+  font-family: var(--font-display);
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  font-size: clamp(.62rem, 2vw, .78rem);
+  color: var(--orange-dark);
+}
+.signature-title{
+  margin:0;
+  font-family: var(--font-script);
+  font-weight:700;
+  font-size: clamp(3.2rem, 14vw, 5.5rem);
+  line-height:1;
+  background: linear-gradient(180deg, var(--orange-light), var(--orange) 65%, var(--orange-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.subtitle{
+  margin:.75rem auto 0;
+  max-width: 30ch;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: clamp(.85rem, 2.4vw, 1rem);
+}
+
+/* =========================================================
+   MAILBOX / SLOTS — cubierta tipo diario de cuero claro
+   ========================================================= */
+.mailbox{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 clamp(.75rem, 3vw, 2rem) 2rem;
+}
+
+.slots-grid{
+  position:relative;
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: clamp(.55rem, 1.6vw, .95rem);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.35), transparent 45%),
+    linear-gradient(var(--leather-light), var(--leather));
+  padding: clamp(.9rem, 2.5vw, 1.6rem);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.25),
+    inset 0 0 0 9px var(--leather),
+    inset 0 0 0 11px rgba(74,47,24,.15),
+    0 14px 30px var(--shadow);
+}
+.slots-grid::before{ /* costura del diario */
+  content:"";
+  position:absolute;
+  inset: 16px;
+  border-radius: 4px;
+  outline: 1.5px dashed rgba(74,47,24,.3);
+  outline-offset: -2px;
+  pointer-events:none;
+}
+
+.slot{
+  position:relative;
+  aspect-ratio: 1 / 1.12;
+  border:none;
+  cursor:pointer;
+  padding:0;
+  border-radius: 5px;
+  background: var(--leather-dark);
+  box-shadow:
+    inset 0 3px 6px var(--shadow),
+    inset 0 -2px 2px rgba(255,255,255,.08);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  overflow:hidden;
+  opacity:0;
+  transform: translateY(10px);
+  transition: transform .5s var(--ease), opacity .5s var(--ease);
+  touch-action: manipulation;
+}
+.slot.is-visible{ opacity:1; transform:translateY(0); }
+.slot:focus-visible{ outline: 2px solid var(--orange-dark); outline-offset: 2px; }
+.slot::before{
+  content:"";
+  position:absolute; inset:3px;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.12);
+  pointer-events:none;
+}
+
+/* mini postal asomando en el casillero desbloqueado */
+.slot-preview{
+  position:absolute;
+  top:8%;
+  width: 60%;
+  height: 48%;
+  display:none;
+  border-radius: 2px;
+  background:
+    var(--slot-photo, none) center/cover no-repeat,
+    linear-gradient(160deg, var(--orange-pale), var(--parchment-edge));
+  box-shadow: 0 3px 6px var(--shadow), 0 0 0 3px var(--parchment);
+  transform: rotate(-3deg);
+  transition: transform .25s var(--ease);
+}
+.slot.is-unlocked .slot-preview{ display:block; }
+.slot.is-unlocked:hover .slot-preview,
+.slot.is-unlocked:focus-visible .slot-preview{ transform: rotate(-3deg) translateY(-3px); }
+/* esquinita doblada, como una foto de verdad pegada a la postal */
+.slot-preview::after{
+  content:"";
+  position:absolute;
+  bottom:0; right:0;
+  width:0; height:0;
+  border-style:solid;
+  border-width: 0 0 10px 10px;
+  border-color: transparent transparent var(--parchment) transparent;
+  filter: drop-shadow(-1px -1px 1px var(--shadow));
+}
+
+.slot-plate{
+  position:relative;
+  width:88%;
+  margin-bottom: 8%;
+  padding: .3em 0;
+  text-align:center;
+  border-radius:2px;
+  background: linear-gradient(180deg, var(--orange-light), var(--orange) 55%, var(--orange-dark));
+  box-shadow: 0 1px 2px var(--shadow), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.slot-plate .plate-age{
+  display:block;
+  font-family: var(--font-display);
+  font-weight:600;
+  font-size: clamp(.85rem, 2.6vw, 1.05rem);
+  color: #3b1c05;
+}
+.slot-plate .plate-year{
+  display:block;
+  font-family: var(--font-display);
+  font-size: clamp(.5rem, 1.6vw, .6rem);
+  letter-spacing:.08em;
+  color: #6b3a10;
+}
+
+.slot.is-current{ animation: glow 2.6s ease-in-out infinite; }
+.slot.is-current .slot-plate{
+  background: linear-gradient(180deg, var(--orange-pale), var(--orange-light) 55%, var(--orange));
+}
+@keyframes glow{
+  0%,100%{ box-shadow: inset 0 3px 6px var(--shadow), 0 0 0 rgba(226,113,29,0); }
+  50%{ box-shadow: inset 0 3px 6px var(--shadow), 0 0 18px rgba(226,113,29,.6); }
+}
+
+.hint{
+  text-align:center;
+  color: var(--ink-soft);
+  opacity:.85;
+  font-style:italic;
+  font-size:.92rem;
+  padding-bottom: 2.5rem;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast{
+  position:fixed;
+  left:50%; bottom: 1.4rem;
+  transform: translate(-50%, 20px);
+  background: var(--ink);
+  color: var(--parchment);
+  font-style: italic;
+  font-size: .95rem;
+  padding: .7em 1.2em;
+  border-radius: 999px;
+  max-width: min(90vw, 380px);
+  text-align:center;
+  box-shadow: 0 10px 24px var(--shadow);
+  opacity:0;
+  pointer-events:none;
+  transition: transform .35s var(--ease), opacity .35s var(--ease);
+  z-index: 50;
+}
+.toast.is-visible{ opacity:1; transform: translate(-50%, 0); }
+
+/* =========================================================
+   LETTER VIEW — STAGE
+   ========================================================= */
+.close-btn{
+  position: absolute;
+  top: 1rem; left: 1rem;
+  z-index: 10;
+  background: rgba(255,255,255,.65);
+  color: var(--ink);
+  border: 1px solid rgba(168,78,20,.3);
+  border-radius: 999px;
+  padding: .5em 1.1em;
+  font-size: .85rem;
+  letter-spacing:.03em;
+  cursor:pointer;
+  touch-action: manipulation;
+  transition: background .2s;
+}
+.close-btn:hover{ background: rgba(255,255,255,.9); }
+
+.stage{
+  position:relative;
+  height:100dvh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 1rem;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(226,113,29,.12), transparent 55%),
+    var(--cream-deep);
+}
+
+/* Todos los "pasos" (postal / sobre / carta) comparten la misma
+   celda de grid, así siempre quedan perfectamente centrados,
+   sin importar el ancho de cada uno ni en qué paso estemos. */
+.stage-inner{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:100%;
+  max-width: 780px;
+}
+.stage-inner > .step{
+  grid-area: 1 / 1;
+  opacity:0;
+  transform: translateY(14px) scale(.97);
+  pointer-events:none;
+  transition: opacity .5s var(--ease-soft), transform .5s var(--ease-soft);
+}
+.stage-inner > .step.is-active{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  pointer-events:auto;
+}
+
+.stage-caption{
+  text-align:center;
+  font-family: var(--font-script);
+  font-size: clamp(1.4rem, 9cqw, 2rem);
+  color: var(--orange-dark);
+  margin: 0 0 .6rem;
+}
+.stage-hint{
+  text-align:center;
+  font-size:.82rem;
+  font-style:italic;
+  color: var(--ink-soft);
+  margin-top: .9rem;
+}
+
+/* =========================================================
+   POSTAL
+   `container-type: inline-size` hace que todo el contenido
+   de dentro (texto, sello, matasellos) escale respecto al
+   ANCHO REAL de la postal, no del viewport — así no se
+   descuadra al hacerla más grande en ordenador.
+   ========================================================= */
+.postcard{
+  width: min(88vw, 380px);
+  container-type: inline-size;
+}
+.postcard.is-vertical{ width: min(60vw, 300px); }
+
+.postcard-flip{
+  position:relative;
+  width:100%;
+  aspect-ratio: 3 / 2;
+  perspective: 1600px;
+  cursor:pointer;
+  touch-action: manipulation;
+}
+.postcard.is-vertical .postcard-flip{ aspect-ratio: 2 / 3; }
+
+.postcard-face{
+  position:absolute; inset:0;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  overflow:hidden;
+  box-shadow: 0 16px 30px var(--shadow);
+  transition: transform .8s var(--ease);
+}
+.postcard-front{
+  background: linear-gradient(160deg, var(--parchment), var(--parchment-edge));
+  padding: 8px;
+}
+.postcard-photo{
+  width:100%; height:100%;
+  object-fit: cover;
+  border-radius: 5px;
+  display:block;
+  background: var(--leather-light);
+}
+.postcard-fallback{
+  position:absolute; inset:8px;
+  border-radius:5px;
+  border: 2px dashed rgba(168,78,20,.5);
+  background: repeating-linear-gradient(135deg, rgba(226,113,29,.09) 0 10px, rgba(226,113,29,.03) 10px 20px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding: 1rem;
+  color: var(--orange-dark);
+  font-size: .82rem;
+  font-style: italic;
+  line-height:1.5;
+}
+.postcard-fallback code{
+  display:inline-block;
+  margin-top:.3em;
+  font-family: monospace;
+  font-style:normal;
+  background: rgba(226,113,29,.14);
+  padding: .1em .4em;
+  border-radius: 3px;
+}
+.postcard.photo-missing .postcard-fallback{ display:flex; }
+
+.postcard-corner{
+  position:absolute;
+  width:0; height:0;
+  border-style: solid;
+  opacity:.95;
+  pointer-events:none;
+}
+.postcard-corner--tl{
+  top:8px; left:8px;
+  border-width: 16px 16px 0 0;
+  border-color: var(--parchment) transparent transparent transparent;
+  filter: drop-shadow(1px 1px 1px var(--shadow));
+}
+.postcard-corner--br{
+  bottom:8px; right:8px;
+  border-width: 0 0 16px 16px;
+  border-color: transparent transparent var(--parchment) transparent;
+  filter: drop-shadow(-1px -1px 1px var(--shadow));
+}
+
+.postcard-back{
+  transform: rotateY(180deg);
+  background: var(--parchment);
+  background-image: radial-gradient(circle at 15% 85%, var(--parchment-spot) 0, transparent 6%);
+}
+/* Reinicia el contexto 3D para el contenido interno: el flip
+   solo lo necesitan las dos caras, no sus hijos — evita bugs
+   de apilamiento (z-index) en navegadores de escritorio. */
+.postcard-back-grid{
+  position:relative;
+  height:100%;
+  transform-style: flat;
+  display:grid;
+  grid-template-columns: 1.15fr 1px 1fr;
+  padding: clamp(.7rem, 4cqw, 1.4rem);
+  gap: clamp(.6rem, 3.5cqw, 1.2rem);
+}
+.postcard-back-grid::before{
+  content:"";
+  grid-column:2;
+  background: rgba(74,47,24,.2);
+}
+.postcard-msg-col{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.postcard-msg{
+  margin:0;
+  font-family: var(--font-script);
+  font-size: clamp(1.1rem, 8cqw, 1.7rem);
+  color: var(--ink);
+  line-height:1.2;
+}
+.postcard-love{
+  margin: .5rem 0 0;
+  font-family: var(--font-script);
+  font-weight:700;
+  font-size: clamp(1.3rem, 9cqw, 2rem);
+  color: var(--orange-dark);
+}
+.postcard-signature{
+  position:absolute;
+  right: clamp(.7rem, 4cqw, 1.4rem);
+  bottom: clamp(.6rem, 3cqw, 1.2rem);
+  margin:0;
+  font-family: var(--font-script);
+  font-weight:700;
+  font-size: clamp(1.2rem, 8cqw, 1.8rem);
+  color: var(--orange-dark);
+}
+.postcard-addr-col{
+  position:relative;
+  padding-top: .6rem;
+}
+.postcard-stamp-wrap{
+  position:relative;
+  width: clamp(44px, 30cqw, 66px);
+  margin-left:auto;
+}
+.postcard-stamp{
+  width:100%;
+  aspect-ratio: 4/5;
+  background:
+    repeating-radial-gradient(circle at 0 0, transparent 0 2px, var(--parchment) 2px 3px),
+    linear-gradient(150deg, var(--orange-light), var(--orange));
+  border: 2px solid var(--parchment);
+  outline: 1px dashed rgba(74,47,24,.4);
+  outline-offset: -5px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom: 6%;
+}
+.postcard-stamp-mark{
+  font-family: var(--font-display);
+  font-size: clamp(.5rem, 3cqw, .7rem);
+  color: #3b1c05;
+  font-weight:600;
+}
+.postcard-postmark{
+  position:absolute;
+  top: -10%;
+  left: -32%;
+  width: 62%;
+  aspect-ratio:1;
+  border-radius:50%;
+  border: 2px solid rgba(74,47,24,.45);
+  box-shadow: 0 0 0 1px rgba(74,47,24,.15) inset;
+  transform: rotate(-14deg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(251,243,223,.6);
+  z-index:2;
+}
+.postcard-postmark-icon{
+  font-size: clamp(.7rem, 5cqw, 1rem);
+  color: var(--wax);
+  opacity:.75;
+}
+.postcard-line{
+  display:block;
+  height:1px;
+  margin-top: 1.6rem;
+  background: rgba(74,47,24,.28);
+}
+.postcard-line.short{ width:60%; }
+
+.postcard-flip.is-flipped .postcard-front{ transform: rotateY(180deg); }
+.postcard-flip.is-flipped .postcard-back{ transform: rotateY(360deg); }
+
+/* transición sutil de la postal hacia el sobre */
+.postcard.is-leaving{
+  opacity:0 !important;
+  transform: translateY(-10px) scale(.94) !important;
+  transition: opacity .5s var(--ease-soft), transform .5s var(--ease-soft);
+}
+
+/* =========================================================
+   SOBRE — con las 4 solapas plegadas para que se lea
+   claramente como un sobre cerrado (como en el reverso real)
+   ========================================================= */
+.envelope{
+  width: min(90vw, 400px);
+  container-type: inline-size;
+}
+
+.envelope-body{
+  position:relative;
+  width:100%;
+  aspect-ratio: 3 / 2;
+  perspective: 900px;
+  filter: drop-shadow(0 16px 26px var(--shadow));
+}
+.envelope-back{
+  position:absolute; inset:0;
+  border-radius: 8px;
+  background: var(--parchment-edge);
+}
+.envelope-fold{
+  position:absolute; inset:0;
+  opacity:.9;
+}
+.envelope-fold--left{
+  clip-path: polygon(0% 0%, 0% 100%, 40% 50%);
+  background: linear-gradient(90deg, rgba(74,47,24,.1), transparent 70%);
+}
+.envelope-fold--right{
+  clip-path: polygon(100% 0%, 100% 100%, 60% 50%);
+  background: linear-gradient(270deg, rgba(74,47,24,.1), transparent 70%);
+}
+.envelope-fold--bottom{
+  clip-path: polygon(0% 100%, 100% 100%, 50% 42%);
+  background: linear-gradient(0deg, rgba(74,47,24,.16), transparent 75%);
+  border-radius: 0 0 8px 8px;
+}
+.envelope-flap-shadow{
+  position:absolute; left:0; right:0; top:0; height:58%;
+  background: linear-gradient(180deg, rgba(74,47,24,.22), transparent);
+  clip-path: polygon(0 0, 100% 0, 50% 90%);
+  opacity:.7;
+}
+.envelope-flap{
+  position:absolute; left:0; right:0; top:0; height:58%;
+  background-color:#d6bd88;
+  background-image: linear-gradient(160deg, #e6d0a0, #c3a86e 65%, #a98a56);
+  clip-path: polygon(0 0, 100% 0, 50% 90%);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  border-radius: 8px 8px 0 0;
+  transition: transform .7s var(--ease);
+  box-shadow: 0 2px 4px rgba(74,47,24,.2);
+}
+
+/* Sello de cera: forma orgánica (no un círculo perfecto),
+   centrado justo donde se cruzan las 4 solapas del sobre. */
+.seal{
+  position:absolute;
+  left:50%; top: 50%;
+  width: clamp(40px, 12cqw, 56px);
+  height: clamp(40px, 12cqw, 56px);
+  border:none;
+  cursor:pointer;
+  clip-path: polygon(
+    50% 3%, 62% 5%, 73% 11%, 83% 20%, 90% 32%,
+    93% 46%, 91% 60%, 85% 72%, 76% 82%,
+    68% 90%, 60% 96%, 55% 100%, 50% 95%, 46% 100%, 42% 94%,
+    32% 90%, 22% 82%, 13% 71%, 7% 58%, 5% 44%,
+    9% 30%, 17% 18%, 28% 10%, 39% 5%
+  );
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255,255,255,.4), transparent 32%),
+    radial-gradient(circle at 70% 76%, rgba(0,0,0,.2), transparent 48%),
+    radial-gradient(circle at 42% 36%, var(--wax-light), var(--wax) 55%, var(--wax-dark) 100%);
+  box-shadow:
+    0 4px 10px var(--shadow),
+    inset 0 2px 4px rgba(255,255,255,.2),
+    inset 0 -4px 7px rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center;
+  transform: translate(-50%,-50%) rotate(-6deg);
+  transition: transform .45s var(--ease), opacity .45s var(--ease);
+  touch-action: manipulation;
+}
+.seal:hover{ transform: translate(-50%,-50%) rotate(-6deg) scale(1.07); }
+.seal-letter{
+  font-family: var(--font-display);
+  font-weight:600;
+  font-size: clamp(1rem, 3.2cqw, 1.25rem);
+  color: rgba(255,225,195,.92);
+  text-shadow: -1px -1px 1px rgba(0,0,0,.35), 1px 1px 1px rgba(255,220,190,.3);
+}
+
+.envelope.is-open .envelope-flap{ transform: rotateX(178deg); }
+.envelope.is-open .seal{ transform: translate(-50%,-50%) rotate(-6deg) scale(0); opacity:0; }
+.envelope.is-open .stage-hint{ opacity:0; }
+
+/* =========================================================
+   CARTA
+   ========================================================= */
+.letter-paper{
+  width: min(92vw, 620px);
+  max-height: 82dvh;
+}
+.letter-paper.step{ transform: translateY(14px) scale(.96); }
+.letter-paper.step.is-active{ transform: translateY(0) scale(1); }
+
+.letter-scroll{
+  max-height: 82dvh;
+  overflow-y:auto;
+  padding: clamp(1.8rem, 6vw, 3.2rem) clamp(1.6rem, 6vw, 3rem) clamp(2.4rem, 6vw, 3.4rem);
+  color: var(--ink);
+  border-radius: 18px;
+  transform: rotate(-.35deg);
+
+  background:
+    radial-gradient(circle at 12% 18%, var(--parchment-spot) 0, transparent 5%),
+    radial-gradient(circle at 85% 76%, var(--parchment-spot) 0, transparent 6%),
+    radial-gradient(circle at 70% 12%, rgba(168,78,20,.14) 0, transparent 4%),
+    var(--parchment);
+  box-shadow:
+    0 22px 44px var(--shadow),
+    inset 0 0 40px rgba(168,78,20,.14),
+    inset 0 0 0 1px rgba(168,78,20,.12);
+}
+
+.letter-postmark{
+  font-style:italic;
+  font-size:.85rem;
+  letter-spacing:.05em;
+  color: var(--ink-soft);
+  margin:0 0 .3rem;
+  text-align:right;
+}
+.letter-title{
+  font-family: var(--font-display);
+  font-weight:600;
+  font-size: clamp(1.6rem, 6vw, 2.3rem);
+  color: var(--ink);
+  margin: 0 0 1.1rem;
+  border-bottom: 1px solid rgba(226,113,29,.35);
+  padding-bottom: .5rem;
+}
+.letter-body{
+  font-size: clamp(1.05rem, 2.6vw, 1.18rem);
+  line-height: 1.75;
+}
+.letter-body p{ margin: 0 0 1.1em; }
+.letter-body p:first-letter{
+  font-family: var(--font-script);
+  font-size: 1.7em;
+  color: var(--orange-dark);
+}
+.letter-sign{
+  margin-top: 1.6rem;
+  text-align:right;
+  font-family: var(--font-script);
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+  color: var(--ink);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 380px){
+  .slots-grid{ grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+}
+@media (min-width: 700px){
+  .slots-grid{ grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+
+  /* En pantallas grandes la postal y el sobre pueden crecer:
+     el `container-type` de arriba hace que todo su contenido
+     (texto, sello, matasellos) escale con ellos sin romperse. */
+  .postcard{ width: min(46vw, 460px); }
+  .postcard.is-vertical{ width: min(32vw, 340px); }
+  .envelope{ width: min(46vw, 480px); }
+  .letter-paper{ width: min(70vw, 700px); }
+}
+@media (min-width: 1000px){
+  .postcard{ width: min(34vw, 480px); }
+  .postcard.is-vertical{ width: min(24vw, 360px); }
+  .envelope{ width: min(34vw, 500px); }
+  .letter-paper{ width: min(56vw, 720px); }
+}
+@media (max-height: 560px) and (orientation: landscape){
+  .postcard, .envelope{ width: min(70vw, 360px); }
+  .letter-paper{ max-height: 92dvh; }
+  .letter-scroll{ max-height: 92dvh; }
+}
